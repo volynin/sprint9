@@ -15,12 +15,12 @@ const (
 // generateRandomElements генерирует слайс случайных положительных чисел заданного размера
 func generateRandomElements(size int) []int {
 	if size <= 0 {
-		return []int{}
+		return nil
 	}
 
 	data := make([]int, size)
 	for i := 0; i < size; i++ {
-		data[i] = rand.Intn(1000000) + 1 // Положительные числа от 1 до 1 000 000
+		data[i] = rand.Int()
 	}
 	return data
 }
@@ -60,27 +60,21 @@ func maxChunks(data []int) int {
 			endIndex = len(data)
 		}
 
-		go func(chunkIdx int, start, end int) {
+		// Создаём срез для текущего чанка
+		chunk := data[startIndex:endIndex]
+
+		go func(chunkIdx int, chunkData []int) {
 			defer wg.Done()
-			chunkMax := data[start]
-			for i := start + 1; i < end; i++ {
-				if data[i] > chunkMax {
-					chunkMax = data[i]
-				}
-			}
+			// Используем функцию maximum для поиска максимума в готовом чанке
+			chunkMax := maximum(chunkData)
 			maxValues[chunkIdx] = chunkMax
-		}(chunkIndex, startIndex, endIndex)
+		}(chunkIndex, chunk)
 	}
 
 	wg.Wait()
 
-	// Находим максимум среди максимальных значений чанков
-	finalMax := maxValues[0]
-	for i := 1; i < CHUNKS; i++ {
-		if maxValues[i] > finalMax {
-			finalMax = maxValues[i]
-		}
-	}
+	// Используем функцию maximum для поиска финального максимума
+	finalMax := maximum(maxValues)
 	return finalMax
 }
 

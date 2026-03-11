@@ -2,77 +2,76 @@ package main
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateRandomElements(t *testing.T) {
-	// Тест с положительным размером
-	size := 10
-	result := generateRandomElements(size)
-	if len(result) != size {
-		t.Errorf("Ожидался слайс размером %d, но получен %d", size, len(result))
+	tests := []struct {
+		name     string
+		size     int
+		expected int
+	}{
+		{"положительный размер", 10, 10},
+		{"нулевой размер", 0, 0},
+		{"отрицательный размер", -5, 0},
 	}
 
-	// Тест с нулевым размером
-	empty := generateRandomElements(0)
-	if len(empty) != 0 {
-		t.Error("Ожидался пустой слайс для размера 0")
-	}
-
-	// Тест с отрицательным размером
-	negative := generateRandomElements(-5)
-	if len(negative) != 0 {
-		t.Error("Ожидался пустой слайс для отрицательного размера")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := generateRandomElements(tt.size)
+			assert.Equal(t, tt.expected, len(result),
+				"для размера %d ожидался слайс длиной %d, но получен %d",
+				tt.size, tt.expected, len(result))
+		})
 	}
 }
 
 func TestMaximum(t *testing.T) {
-	// Тест с пустым слайсом
-	empty := []int{}
-	if result := maximum(empty); result != 0 {
-		t.Errorf("Для пустого слайса ожидался 0, но получено %d", result)
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{"пустой слайс", []int{}, 0},
+		{"один элемент", []int{42}, 42},
+		{"несколько элементов", []int{1, 5, 3, 9, 2}, 9},
+		{"одинаковые элементы", []int{7, 7, 7}, 7},
+		{"убывающая последовательность", []int{9, 7, 5, 3}, 9},
+		{"возрастающая последовательность", []int{1, 3, 5, 7, 9}, 9},
 	}
 
-	// Тест с одним элементом
-	single := []int{42}
-	if result := maximum(single); result != 42 {
-		t.Errorf("Для слайса [42] ожидался 42, но получено %d", result)
-	}
-
-	// Тест с несколькими элементами
-	multiple := []int{1, 5, 3, 9, 2}
-	if result := maximum(multiple); result != 9 {
-		t.Errorf("Для слайса [1,5,3,9,2] ожидался 9, но получено %d", result)
-	}
-
-	// Тест с одинаковыми элементами
-	same := []int{7, 7, 7}
-	if result := maximum(same); result != 7 {
-		t.Errorf("Для слайса [7,7,7] ожидался 7, но получено %d", result)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := maximum(tt.input)
+			assert.Equal(t, tt.expected, result,
+				"для слайса %v ожидался максимум %d, но получено %d",
+				tt.input, tt.expected, result)
+		})
 	}
 }
 
 func TestMaxChunks(t *testing.T) {
-	// Тест с пустым слайсом
-	empty := []int{}
-	if result := maxChunks(empty); result != 0 {
-		t.Errorf("Для пустого слайса ожидался 0, но получено %d", result)
+	tests := []struct {
+		name     string
+		input    []int
+		expected int
+	}{
+		{"пустой слайс", []int{}, 0},
+		{"один элемент", []int{42}, 42},
+		{"маленький слайс (меньше чанков)", []int{1, 3, 2}, 3},
+		{"нормальный слайс", []int{1, 10, 3, 8, 5, 12, 7, 6}, 12},
+		{"все элементы одинаковые", []int{5, 5, 5, 5}, 5},
+		{"максимум в начале", []int{15, 1, 2, 3}, 15},
+		{"максимум в конце", []int{1, 2, 3, 20}, 20},
 	}
 
-	// Тест с одним элементом
-	single := []int{42}
-	if result := maxChunks(single); result != 42 {
-		t.Errorf("Для слайса [42] ожидался 42, но получено %d", result)
-	}
-
-	// Тест с небольшим слайсом (меньше количества чанков)
-	small := []int{1, 3, 2}
-	if result := maxChunks(small); result != 3 {
-		t.Errorf("Для слайса [1,3,2] ожидался 3, но получено %d", result)
-	}
-
-	// Тест с нормальным слайсом
-	normal := []int{1, 10, 3, 8, 5, 12, 7, 6}
-	if result := maxChunks(normal); result != 12 {
-		t.Errorf("Для слайса [1,10,3,8,5,12,7,6] ожидался 12, но получено %d", result)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := maxChunks(tt.input)
+			assert.Equal(t, tt.expected, result,
+				"для слайса %v ожидался максимум %d, но получено %d",
+				tt.input, tt.expected, result)
+		})
 	}
 }
